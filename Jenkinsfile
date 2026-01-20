@@ -3,14 +3,7 @@ pipeline {
 
     environment {
         TF_IN_AUTOMATION = "true"
-        TF_INPUT = "false"
-
-        ARM_CLIENT_ID       = credentials('ARM_CLIENT_ID')
-        ARM_CLIENT_SECRET   = credentials('ARM_CLIENT_SECRET')
-        ARM_TENANT_ID       = credentials('ARM_TENANT_ID')
-        ARM_SUBSCRIPTION_ID = credentials('ARM_SUBSCRIPTION_ID')
-
-        TF_VAR_ssh_public_key = credentials('TF_VAR_ssh_public_key')
+        TF_INPUT         = "false"
     }
 
     stages {
@@ -22,7 +15,15 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                withCredentials([
+                    string(credentialsId: 'ARM_CLIENT_ID', variable: 'ARM_CLIENT_ID'),
+                    string(credentialsId: 'ARM_CLIENT_SECRET', variable: 'ARM_CLIENT_SECRET'),
+                    string(credentialsId: 'ARM_TENANT_ID', variable: 'ARM_TENANT_ID'),
+                    string(credentialsId: 'ARM_SUBSCRIPTION_ID', variable: 'ARM_SUBSCRIPTION_ID'),
+                    string(credentialsId: 'TF_VAR_ssh_public_key', variable: 'TF_VAR_ssh_public_key')
+                ]) {
+                    sh 'terraform init'
+                }
             }
         }
 
@@ -44,14 +45,13 @@ pipeline {
             }
         }
     }
+
     post {
-    always {
-        node {
-            cleanWs()
+        always {
+            node {
+                cleanWs()
+            }
         }
     }
 }
 
-
-   
-}
