@@ -11,7 +11,8 @@ pipeline {
         ARM_SUBSCRIPTION_ID = credentials('ARM_SUBSCRIPTION_ID')
 
         // SSH public key
-        TF_VAR_ssh_public_key = credentials('TERRAFORM_VM_SSH_PUBLIC_KEY')
+       TF_VAR_ssh_public_key = credentials('TF_VAR_ssh_public_key')
+
 
        
     }
