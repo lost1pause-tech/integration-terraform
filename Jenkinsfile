@@ -3,22 +3,17 @@ pipeline {
 
     environment {
         TF_IN_AUTOMATION = "true"
-  
-// Azure Service Principal credentials
+        TF_INPUT = "false"
+
         ARM_CLIENT_ID       = credentials('ARM_CLIENT_ID')
         ARM_CLIENT_SECRET   = credentials('ARM_CLIENT_SECRET')
         ARM_TENANT_ID       = credentials('ARM_TENANT_ID')
         ARM_SUBSCRIPTION_ID = credentials('ARM_SUBSCRIPTION_ID')
 
-        // SSH public key
-       TF_VAR_ssh_public_key = credentials('TF_VAR_ssh_public_key')
-
-
-       
+        TF_VAR_ssh_public_key = credentials('TF_VAR_ssh_public_key')
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -27,36 +22,32 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                bat 'terraform init'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh 'terraform validate'
+                bat 'terraform validate'
             }
         }
 
         stage('Terraform Plan') {
             steps {
-                sh 'terraform plan -out=tfplan'
+                bat 'terraform plan -out=tfplan'
             }
         }
 
         stage('Terraform Apply') {
             steps {
-                sh 'terraform apply -auto-approve tfplan'
+                bat 'terraform apply -auto-approve tfplan'
             }
         }
     }
 
     post {
-        success {
-            echo 'Terraform Plan and Apply completed successfully'
+        always {
+            cleanWs()
         }
-        failure {
-            echo 'Terraform Plan or Apply failed'
-        }
-       
     }
 }
