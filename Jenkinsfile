@@ -56,8 +56,6 @@ pipeline {
         failure {
             echo 'Terraform Plan or Apply failed'
         }
-        always {
-            cleanWs()
-        }
+       
     }
 }
